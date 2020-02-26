@@ -1,0 +1,24 @@
+body{
+	background-color: #333333;
+	font-family: "Lucida Console", Monaco, monospace;
+}
+#main{
+	border-radius: 25px;
+	background-color: white;
+	padding: 2em 3em;
+	margin: 30vh auto;
+	max-width: 60%;
+	text-align: center;
+}
+h1{
+	font-size: 2em;
+	font-weight: bold;
+	word-wrap: break-word;
+}
+
+h2{
+	font-size: 1em;
+}
+#inputbox{
+	border-radius: 5px;
+}
