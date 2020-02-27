@@ -7,7 +7,7 @@
 		<link rel="stylesheet" href="style.css">
 		<script src="input.js"></script>
   </head>
-  <body onload="initialize()">
+  <body>
   	<div id="main">
   		<h1 id="title">scramble / de-scramble</h1>
   		<br>
@@ -15,12 +15,71 @@
 	  	<form>
 	  		<input type="text" name="scramble" placeholder="enter word(s)" onfocus="clear()" id="inputbox" autofocus>
 	  		
-	  		<p id="speedDisplay"><br>Speed: </p>
+	  		<p id="speedDisplay"><br>Speed: Slow...</p>
 	  		<input type="range" min="1" max="10" value="10" name="speed" id="speedSlider">
 	  		<br>
 	  	</form>
 
-	  	<button type="button" onclick="submitInput()">go</button>
+	  	<button id="btn" type="button">go</button>
 	  </div>
+	  
+	  <script id="worker">
+      var array = [
+        "a", "b", "c", "d", "e", "f", "g", "h", 
+        "i", "j", "k", "l", "m", "n", "o", "p",
+        "q", "r", "s", "t", "u", "v", "w", "x", 
+        "y", "z", 
+        "A", "B", "C", "D", "E", "F", "G", "H",
+        "I", "J", "K", "L", "M", "N", "O", "P", 
+        "Q", "R", "S", "T", "U", "V", "W", "X",
+        "Y", "Z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "!", "@", "#", "$", "%", "^", "&", "*", 
+        "(", ")", "_", "-", "+", "=", ":", ";",
+        //"<", open bracket will cause html to hide the rest of the line
+        ">", ".", "?", "/", "|", "{", "[", "]", "}", 
+        " ", "\\", "\'", "\"", "å", "ß", "Ø", "Ö", "Õ"
+        ];
+
+      var slider = 5;
+
+      function loop(data){
+        var guess = [];
+        for(var i = 0; i < data.word.length; i++){
+          //if guess letter at current element matches name at current 
+          //element, push it on array and continue loop
+          //otherwise, push on a random char
+          if(data.word[i] == data.in[i]){
+            guess.push(data.word[i]);
+            continue;
+          }
+          else
+            guess.push(array[Math.floor(Math.random() * array.length)]);
+        }
+        data.word = guess.join('');
+        postMessage(guess.join(''));
+
+        var speed = slider * 10;
+        console.log("slider " + slider);
+        console.log("speed " + speed);
+        setTimeout(function(){loop(data);}, speed);
+      }
+
+      self.addEventListener('message', function(e){
+        switch(e.data.cmd){
+          case 'start':{
+            console.log(e.data.word);
+            loop(e.data);
+            break;
+          }
+          case 'sliderInput':{
+            //slider = e.data.msg;
+            //console.log(e.data.msg);
+            break;
+          }
+        }
+      }, false);
+
+	  </script>
   </body>
 </html>
