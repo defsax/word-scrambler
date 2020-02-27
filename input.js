@@ -5,9 +5,11 @@ window.onload = () => {
   const speedDisplay = document.getElementById("speedDisplay");
   const input = document.getElementById("inputbox");
   rangeInput.value = 1;
+  speedDisplay.innerHTML = "<br>Speed: Fast!";
   btn.addEventListener("click", btnToggle);
-  rangeInput.addEventListener("change", updateSpeed);
+  rangeInput.addEventListener('input', updateSpeed);
   sessionStorage.clear();
+  input.value = "";
 
   var worker;
   let useWorker = false;
@@ -24,7 +26,9 @@ window.onload = () => {
       useWorker = true;
       initWorker();
       console.log("worker started...");
-      buttonID.disabled = true;
+    }
+    else{
+     console.log("worker already running..."); 
     }
     /*
     if (typeof(worker) == "undefined") {
@@ -68,10 +72,19 @@ window.onload = () => {
         
         if (useWorker == true) {          
           console.log(event.data);
-          document.getElementById("title2").innerHTML = event.data;
+          if(event.data == input){
+            console.log("Input found. Stopping worker.");
+            clear();
+            worker.postMessage({cmd: "stop"});
+            worker = undefined;
+            useWorker = false;
+          }
+          
+          //document.getElementById("title2").innerHTML = event.data;
         } else if (useWorker == false) {
-          document.getElementById("title2").innerHTML = event.data;
+          //document.getElementById("title2").innerHTML = event.data;
           console.log("last received num from worker: " + event.data);
+          
           //if good, store
           if (typeof Storage !== "undefined") {
             console.log("Web storage available.");
@@ -106,13 +119,17 @@ window.onload = () => {
         speedDisplay.innerHTML = "<br>Speed: " + rangeInput.value;
         break;
       }
-    }
+    }    
+  }
+  
+  rangeInput.oninput = function(){
+    speedDisplay.innerHTML = "<br>Speed: " + rangeInput.value;
+    console.log("rangeUpdated");
     
     if(useWorker != false){
       worker.postMessage({cmd: "updateSpeed", speed: rangeInput.value});
       console.log("Slider = " + rangeInput.value);
     }
-    
   }
 };
 

@@ -24,7 +24,7 @@
 	  </div>
 	  
 	  <script id="worker">
-      var array = [
+      var randChar = [
         "a", "b", "c", "d", "e", "f", "g", "h", 
         "i", "j", "k", "l", "m", "n", "o", "p",
         "q", "r", "s", "t", "u", "v", "w", "x", 
@@ -41,44 +41,57 @@
         " ", "\\", "\'", "\"", "å", "ß", "Ø", "Ö", "Õ"
         ];
 
-      var slider = 5;
+      var correctWord;
+      var speed;
 
-      function loop(data){
-        var guess = [];
-        for(var i = 0; i < data.word.length; i++){
+      function loop(guessWord){
+        //loop should start with guessWord and correctWord being the same length thanks to createGuessWord function
+        for(var i = 0; i < guessWord.length; i++){
           //if guess letter at current element matches name at current 
           //element, push it on array and continue loop
           //otherwise, push on a random char
-          if(data.word[i] == data.in[i]){
-            guess.push(data.word[i]);
+          if(guessWord[i] == correctWord[i]){
+            guessWord[i] = correctWord[i];
             continue;
           }
           else
-            guess.push(array[Math.floor(Math.random() * array.length)]);
+            guessWord[i] = randChar[Math.floor(Math.random() * randChar.length)];
         }
-        data.word = guess.join('');
-        postMessage(guess.join(''));
-
-        var speed = slider * 10;
-        console.log("slider " + slider);
-        console.log("speed " + speed);
-        setTimeout(function(){loop(data);}, speed);
+        postMessage(guessWord.join(''));
+        setTimeout(function(){loop(guessWord);}, speed);
       }
 
       self.addEventListener('message', function(e){
         switch(e.data.cmd){
           case 'start':{
-            console.log(e.data.word);
-            loop(e.data);
+            correctWord = e.data.word;
+            speed = Math.pow(e.data.speed, 2) * 10;
+            loop(createGuessWord(correctWord));
             break;
           }
-          case 'sliderInput':{
-            //slider = e.data.msg;
-            //console.log(e.data.msg);
+          case 'stop':{
+            self.close();
+            break;
+          }
+          case 'updateSpeed':{
+            speed = Math.pow(e.data.speed, 2) * 10;
+            break;
+          }
+          default:{
+            postMessage("ERROR: Unknown command.");
             break;
           }
         }
       }, false);
+      
+      function createGuessWord(correctWord){
+        let guessWord = [];
+        for(let i = 0; i < correctWord.length; i++){
+          guessWord.push("x");
+        }
+        postMessage(guessWord.join(''));
+        return guessWord;
+      }
 
 	  </script>
   </body>
