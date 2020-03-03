@@ -14,7 +14,7 @@
 	  	<h2></h2>
 	  	<form>
 	  		<input type="text" name="scramble" placeholder="enter word(s)" onfocus="clear()" id="inputbox" autofocus>
-	  		
+	  		<p id="errorNotice"></p>
 	  		<p id="speedDisplay"><br>Speed: Slow...</p>
 	  		<input type="range" min="1" max="10" value="10" name="speed" id="speedSlider">
 	  		<br>
@@ -24,23 +24,7 @@
 	  </div>
 	  
 	  <script id="worker">
-      var randChar = [
-        "a", "b", "c", "d", "e", "f", "g", "h", 
-        "i", "j", "k", "l", "m", "n", "o", "p",
-        "q", "r", "s", "t", "u", "v", "w", "x", 
-        "y", "z", 
-        "A", "B", "C", "D", "E", "F", "G", "H",
-        "I", "J", "K", "L", "M", "N", "O", "P", 
-        "Q", "R", "S", "T", "U", "V", "W", "X",
-        "Y", "Z",
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-        "!", "@", "#", "$", "%", "^", "&", "*", 
-        "(", ")", "_", "-", "+", "=", ":", ";",
-        //"<", open bracket will cause html to hide the rest of the line
-        ">", ".", "?", "/", "|", "{", "[", "]", "}", 
-        " ", "\\", "\'", "\"", "å", "ß", "Ø", "Ö", "Õ"
-        ];
-
+      var charArray;
       var correctWord;
       var speed;
 
@@ -54,11 +38,13 @@
             guessWord[i] = correctWord[i];
             continue;
           }
-          else
-            guessWord[i] = randChar[Math.floor(Math.random() * randChar.length)];
+          else{
+            //if the char does not match, load a new, random char in that element of the array
+            guessWord[i] = charArray[Math.floor(Math.random() * charArray.length)];
+          }
         }
-        postMessage(guessWord.join(''));
-        setTimeout(function(){loop(guessWord);}, speed);
+        postMessage(guessWord.join('')); //send guessword back
+        setTimeout(function(){loop(guessWord);}, speed); 
       }
 
       self.addEventListener('message', function(e){
@@ -66,6 +52,7 @@
           case 'start':{
             correctWord = e.data.word;
             speed = Math.pow(e.data.speed, 2) * 10;
+            charArray = e.data.randChars;
             loop(createGuessWord(correctWord));
             break;
           }

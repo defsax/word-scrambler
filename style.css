@@ -21,3 +21,7 @@ h2{
 #inputbox{
 	border-radius: 5px;
 }
+#errorNotice{
+  color: red;
+  margin-top: 5px;
+}

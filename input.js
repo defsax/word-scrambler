@@ -1,4 +1,26 @@
 window.onload = () => {
+  var randChar = [
+    "a", "b", "c", "d", "e", "f", "g", "h", 
+    "i", "j", "k", "l", "m", "n", "o", "p",
+    "q", "r", "s", "t", "u", "v", "w", "x", 
+    "y", "z", 
+    "A", "B", "C", "D", "E", "F", "G", "H",
+    "I", "J", "K", "L", "M", "N", "O", "P", 
+    "Q", "R", "S", "T", "U", "V", "W", "X",
+    "Y", "Z",
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "!", "@", "#", "$", "%", "^", "&", "*", 
+    "(", ")", "_", "-", "+", "=", ":", ";",
+    //"<", open bracket will cause html to hide the rest of the line
+    ">", ".", ",", "?", "/", "|", "{", "[", "]", "}", 
+    " ", "\\", "\'", "\"", "å", "ß", "Ø", "Ö", "Õ"
+  ];
+  
+  var WordCheck = {
+    pass: "false",
+    char: ""
+  };
+  
   const buttonID = document.getElementById("btn");
   const rangeInput = document.getElementById("speedSlider");
   const speedDisplay = document.getElementById("speedDisplay");
@@ -18,8 +40,14 @@ window.onload = () => {
   function btnToggle() {
     //button should disable when worker starts, and re-enable when worker finds the word
     if(useWorker == false){
-      useWorker = true;
-      initWorker();
+      if(initWorker() == true){
+        useWorker = true;
+        document.getElementById("errorNotice").innerHTML = "";
+      }
+      else{
+        document.getElementById("errorNotice").innerHTML = "Invalid char: " + WordCheck.char;
+        console.log("initWorker returned false.");
+      }
     }
     else{
      console.log("worker already running..."); 
@@ -35,7 +63,12 @@ window.onload = () => {
     
     console.log(input);
     
-    //todo: check for char legitimacy
+    //check for char legitimacy
+    if(!checkInput(input)){
+      console.log("checkInput returned false.");
+      return false;
+    }
+    
     
     //if good, store
     if(typeof(Storage) !== "undefined"){
@@ -72,8 +105,10 @@ window.onload = () => {
     worker.postMessage({
       cmd: "start",
       word: input,
-      speed: rangeInput.value
+      speed: rangeInput.value,
+      randChars: randChar
     });
+    return true;
   }
   
   rangeInput.oninput = function(){
@@ -97,6 +132,26 @@ window.onload = () => {
       worker.postMessage({cmd: "updateSpeed", speed: rangeInput.value});
       console.log("Slider = " + rangeInput.value);
     }
+  }
+  
+  
+  function checkInput(inputCharacters){
+    let search;
+    
+    //check for invalid input. invalid if no index found in char array
+    for(let i = 0; i < inputCharacters.length; i++){
+      search = randChar.indexOf(inputCharacters[i]);
+      console.log("Results: " + search);
+      if(search == -1){
+        console.log("Invalid char entered: " + inputCharacters[i]);
+        WordCheck.pass = false;
+        WordCheck.char = inputCharacters[i];
+        return false;
+      }
+    }
+    WordCheck.pass = true;
+    WordCheck.char = "";
+    return true;
   }
   
   function clear(){
