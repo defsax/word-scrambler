@@ -24,7 +24,7 @@ window.onload = () => {
   const buttonID = document.getElementById("btn");
   const rangeInput = document.getElementById("speedSlider");
   const speedDisplay = document.getElementById("speedDisplay");
-  const input = document.getElementById("inputbox");
+  const inputForm = document.getElementById("inputbox");
   
   initialize();
 
@@ -156,7 +156,7 @@ window.onload = () => {
   
   function clear(){
     sessionStorage.clear();
-    input.value = "";
+    inputForm.value = "";
   }
 
   function initialize(){
@@ -164,6 +164,6 @@ window.onload = () => {
     speedDisplay.innerHTML = "<br>Speed: Fast!";
     btn.addEventListener("click", btnToggle);
     sessionStorage.clear();
-    input.value = "";
+    inputForm.value = "";
   }
 };
