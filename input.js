@@ -11,15 +11,12 @@ window.onload = () => {
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
     "!", "@", "#", "$", "%", "^", "&", "*", 
     "(", ")", "_", "-", "+", "=", ":", ";",
-    //"<", open bracket will cause html to hide the rest of the line
+    //"<", //open bracket will cause html to hide the rest of the line
     ">", ".", ",", "?", "/", "|", "{", "[", "]", "}", 
     " ", "\\", "\'", "\"", "å", "ß", "Ø", "Ö", "Õ"
   ];
   
-  var WordCheck = {
-    pass: "false",
-    char: ""
-  };
+  var invalidChar = "";
   
   const buttonID = document.getElementById("btn");
   const rangeInput = document.getElementById("speedSlider");
@@ -45,7 +42,7 @@ window.onload = () => {
         document.getElementById("errorNotice").innerHTML = "";
       }
       else{
-        document.getElementById("errorNotice").innerHTML = "Invalid char: " + WordCheck.char;
+        document.getElementById("errorNotice").innerHTML = "Invalid char: " + invalidChar;
         console.log("initWorker returned false.");
       }
     }
@@ -144,13 +141,11 @@ window.onload = () => {
       console.log("Results: " + search);
       if(search == -1){
         console.log("Invalid char entered: " + inputCharacters[i]);
-        WordCheck.pass = false;
-        WordCheck.char = inputCharacters[i];
+        invalidChar = inputCharacters[i];
         return false;
       }
     }
-    WordCheck.pass = true;
-    WordCheck.char = "";
+    invalidChar = "";
     return true;
   }
   
